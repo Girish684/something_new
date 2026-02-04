@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+s<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ObsidianDark - Aesthetic Note Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-color: #30363d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-purple: #bc8cff;
+            --accent-blue: #79c0ff;
+            --accent-green: #7ee787;
+            --accent-red: #ff7b72;
+            --accent-yellow: #ffd33d;
+            --graph-node: var(--accent-purple);
+            --graph-link: #3a424e;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            height: var(--header-height);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            color: var(--accent-purple);
+            font-size: 24px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 22px;
+            background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background-color: var(--bg-tertiary);
+            color: var(--accent-purple);
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-item span {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .note-count {
+            margin-left: auto;
+            background-color: var(--bg-primary);
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-header {
+            height: var(--header-height);
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            width: 300px;
+        }
+
+        .search-bar i {
+            color: var(--text-secondary);
+            margin-right: 10px;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            width: 100%;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .header-btn:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Notes Panel Styles */
+        .notes-panel {
+            width: 320px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .notes-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notes-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .notes-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .notes-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .notes-btn:hover {
+            background-color: var(--accent-purple);
+            color: var(--bg-primary);
+        }
+
+        .notes-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .note-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .note-item:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .note-item.active {
+            background-color: var(--bg-tertiary);
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .note-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .note-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .note-preview {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .note-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .note-tag {
+            background-color: var(--bg-primary);
+            color: var(--accent-blue);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Editor Panel Styles */
+        .editor-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .editor-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-title {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 700;
+            width: 100%;
+            outline: none;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .editor-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .editor-btn:hover {
+            background-color: var(--accent-purple);
+            color: var(--bg-primary);
+        }
+
+        .editor-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .editor-textarea {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            width: 100%;
+            height: 100%;
+            outline: none;
+            resize: none;
+        }
+
+        .editor-textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .editor-preview {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .editor-preview h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+        }
+
+        .editor-preview h2 {
+            font-size: 22px;
+            margin: 15px 0 10px;
+            color: var(--accent-purple);
+        }
+
+        .editor-preview p {
+            margin-bottom: 15px;
+        }
+
+        .editor-preview code {
+            background-color: var(--bg-tertiary);
+            color: var(--accent-green);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .editor-preview pre {
+            background-color: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .editor-preview blockquote {
+            border-left: 4px solid var(--accent-purple);
+            padding-left: 15px;
+            margin: 15px 0;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Graph Panel Styles */
+        .graph-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .graph-container {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #graph-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .graph-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .graph-btn {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .graph-btn:hover {
+            background-color: var(--accent-purple);
+            color: var(--bg-primary);
+        }
+
+        .graph-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background-color: rgba(13, 17, 23, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            width: 280px;
+        }
+
+        .graph-info h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--accent-purple);
+        }
+
+        .graph-info p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            padding: 16px 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-tertiary);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-purple);
+            border-bottom: 3px solid var(--accent-purple);
+        }
+
+        .panel {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .panel.active {
+            display: flex;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .notes-panel {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .logo-text, .nav-item span, .note-count, .user-name {
+                display: none;
+            }
+            
+            .notes-panel {
+                width: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-gem logo-icon"></i>
+                    <span class="logo-text">ObsidianDark</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-item active" data-tab="editor">
+                    <i class="fas fa-edit"></i>
+                    <span>Editor</span>
+                </div>
+                <div class="nav-item" data-tab="graph">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Graph View</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-folder"></i>
+                    <span>Vault</span>
+                    <span class="note-count">12</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Tags</span>
+                    <span class="note-count">24</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-moon"></i>
+                    <span>Dark Mode</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">JD</div>
+                    <div class="user-name">John Doe</div>
+                </div>
+                <div class="header-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search notes...">
+                </div>
+                
+                <div class="header-actions">
+                    <div class="header-btn">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="header-btn">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="header-btn">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-area">
+                <!-- Notes Panel -->
+                <div class="notes-panel">
+                    <div class="notes-header">
+                        <h2>Recent Notes</h2>
+                        <div class="notes-actions">
+                            <button class="notes-btn" id="new-note-btn">
+                                <i class="fas fa-plus"></i> New Note
+                            </button>
+                            <button class="notes-btn">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="notes-list" id="notes-list">
+                        <!-- Notes will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Main Panel with Tabs -->
+                <div class="main-panel">
+                    <div class="tab-nav">
+                        <button class="tab-btn active" data-tab="editor">
+                            <i class="fas fa-edit"></i> Editor
+                        </button>
+                        <button class="tab-btn" data-tab="preview">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                        <button class="tab-btn" data-tab="graph">
+                            <i class="fas fa-project-diagram"></i> Graph
+                        </button>
+                    </div>
+                    
+                    <!-- Editor Panel -->
+                    <div class="panel active" id="editor-panel">
+                        <div class="editor-panel">
+                            <div class="editor-header">
+                                <input type="text" class="editor-title" id="note-title" placeholder="Note Title" value="Welcome to ObsidianDark">
+                                <div class="editor-actions">
+                                    <button class="editor-btn" id="save-btn">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                    <button class="editor-btn">
+                                        <i class="fas fa-share"></i> Share
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="editor-content">
+                                <textarea class="editor-textarea" id="note-editor" placeholder="Start typing your note here..."># Welcome to ObsidianDark
+
+## Aesthetic Note-Taking Platform
+
+This is a stunning dark-themed note-taking application inspired by **Obsidian**. It features a beautiful interface with graph visualization, markdown support, and a seamless note-taking experience.
+
+### Key Features
+- **Dark aesthetic** design with purple accent colors
+- **Graph visualization** of connected notes
+- **Markdown support** with live preview
+- **Tagging system** for organization
+- **Full responsiveness** for all devices
+
+### Code Example
+Here's a JavaScript example:
+\`\`\`javascript
+function greetUser(name) {
+    return `Hello, ${name}! Welcome to ObsidianDark.`;
+}
+
+console.log(greetUser("Note Taker"));
+\`\`\`
+
+### Blockquote
+> "The best way to predict the future is to create it." - Abraham Lincoln
+
+### Graph View
+Navigate to the Graph View to visualize connections between your notes. Each note becomes a node, and links between notes create a knowledge graph.
+
+Start by creating new notes and linking them together using double brackets like this: [[Project Ideas]] or [[Meeting Notes]].
+
+### Tags
+You can add tags to categorize your notes:
+- #idea
+- #important
+- #project
+- #meeting</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Preview Panel -->
+                    <div class="panel" id="preview-panel">
+                        <div class="editor-panel">
+                            <div class="editor-header">
+                                <div class="editor-title" id="preview-title">Welcome to ObsidianDark</div>
+                                <div class="editor-actions">
+                                    <button class="editor-btn">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="editor-content">
+                                <div class="editor-preview" id="note-preview">
+                                    <!-- Preview will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Graph Panel -->
+                    <div class="panel" id="graph-panel">
+                        <div class="graph-panel">
+                            <div class="graph-container">
+                                <canvas id="graph-canvas"></canvas>
+                                <div class="graph-controls">
+                                    <button class="graph-btn" id="zoom-in">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                    <button class="graph-btn" id="zoom-out">
+                                        <i class="fas fa-search-minus"></i>
+                                    </button>
+                                    <button class="graph-btn" id="center-graph">
+                                        <i class="fas fa-crosshairs"></i>
+                                    </button>
+                                    <button class="graph-btn" id="graph-layout">
+                                        <i class="fas fa-sitemap"></i>
+                                    </button>
+                                </div>
+                                <div class="graph-info">
+                                    <h3>Graph View</h3>
+                                    <p>This visualization shows connections between your notes. Each circle represents a note, and lines represent links between them.</p>
+                                    <p>Click on a node to open the corresponding note. Drag to navigate the graph.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample notes data
+        const notes = [
+            {
+                id: 1,
+                title: "Welcome to ObsidianDark",
+                date: "2023-10-15",
+                content: "# Welcome to ObsidianDark\n\n## Aesthetic Note-Taking Platform\n\nThis is a stunning dark-themed note-taking application inspired by **Obsidian**.",
+                tags: ["welcome", "intro"]
+            },
+            {
+                id: 2,
+                title: "Project Ideas",
+                date: "2023-10-14",
+                content: "# Project Ideas\n\n## New Applications\n1. Personal knowledge management system\n2. Habit tracking app with gamification\n3. Learning platform with spaced repetition",
+                tags: ["project", "ideas"]
+            },
+            {
+                id: 3,
+                title: "Meeting Notes",
+                date: "2023-10-13",
+                content: "# Weekly Team Meeting\n\n## Discussion Points\n- Project timeline review\n- Design system updates\n- New feature planning",
+                tags: ["meeting", "work"]
+            },
+            {
+                id: 4,
+                title: "Learning Resources",
+                date: "2023-10-12",
+                content: "# Learning Resources\n\n## JavaScript\n- MDN Web Docs\n- JavaScript.info\n- FreeCodeCamp\n\n## Design\n- Refactoring UI\n- Laws of UX",
+                tags: ["learning", "resources"]
+            },
+            {
+                id: 5,
+                title: "Travel Plans",
+                date: "2023-10-10",
+                content: "# Travel Plans\n\n## Destinations\n1. Japan - Spring 2024\n2. Italy - Summer 2024\n3. Iceland - Winter 2024",
+                tags: ["personal", "travel"]
+            },
+            {
+                id: 6,
+                title: "Book Recommendations",
+                date: "2023-10-08",
+                content: "# Book Recommendations\n\n## Fiction\n- Project Hail Mary by Andy Weir\n- The Three-Body Problem by Liu Cixin\n\n## Non-Fiction\n- Atomic Habits by James Clear\n- Deep Work by Cal Newport",
+                tags: ["reading", "books"]
+            }
+        ];
+
+        // Current note
+        let currentNoteId = 1;
+
+        // DOM Elements
+        const notesList = document.getElementById('notes-list');
+        const noteEditor = document.getElementById('note-editor');
+        const noteTitle = document.getElementById('note-title');
+        const notePreview = document.getElementById('note-preview');
+        const previewTitle = document.getElementById('preview-title');
+        const saveBtn = document.getElementById('save-btn');
+        const newNoteBtn = document.getElementById('new-note-btn');
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const navItems = document.querySelectorAll('.nav-item');
+        const panels = document.querySelectorAll('.panel');
+
+        // Initialize the app
+        function initApp() {
+            renderNotesList();
+            loadNote(currentNoteId);
+            setupEventListeners();
+            renderGraph();
+            renderPreview();
+        }
+
+        // Render notes list
+        function renderNotesList() {
+            notesList.innerHTML = '';
+            
+            notes.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.className = `note-item ${note.id === currentNoteId ? 'active' : ''}`;
+                noteElement.dataset.id = note.id;
+                
+                noteElement.innerHTML = `
+                    <div class="note-title">
+                        ${note.title}
+                        <i class="fas fa-star" style="color: var(--accent-yellow);"></i>
+                    </div>
+                    <div class="note-date">${formatDate(note.date)}</div>
+                    <div class="note-preview">${note.content.substring(0, 100)}...</div>
+                    <div class="note-tags">
+                        ${note.tags.map(tag => `<span class="note-tag">#${tag}</span>`).join('')}
+                    </div>
+                `;
+                
+                noteElement.addEventListener('click', () => {
+                    currentNoteId = note.id;
+                    loadNote(note.id);
+                    updateActiveNotes();
+                });
+                
+                notesList.appendChild(noteElement);
+            });
+        }
+
+        // Load note into editor
+        function loadNote(id) {
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                noteTitle.value = note.title;
+                noteEditor.value = note.content;
+                previewTitle.textContent = note.title;
+                renderPreview();
+            }
+        }
+
+        // Update active note in list
+        function updateActiveNotes() {
+            document.querySelectorAll('.note-item').forEach(item => {
+                item.classList.remove('active');
+                if (parseInt(item.dataset.id) === currentNoteId) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Render markdown preview
+        function renderPreview() {
+            const content = noteEditor.value;
+            
+            // Simple markdown to HTML conversion
+            let html = content
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/```([\s\S]*?)```/g, '<pre>$1</pre>')
+                .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+            
+            // Add paragraph tags
+            html = '<p>' + html + '</p>';
+            
+            // Replace line breaks within paragraphs
+            html = html.replace(/<p>(.*?)<br><br>(.*?)<\/p>/g, '<p>$1</p><p>$2</p>');
+            
+            notePreview.innerHTML = html;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tab navigation
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.dataset.tab;
+                    
+                    // Update active tab button
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Show corresponding panel
+                    panels.forEach(panel => panel.classList.remove('active'));
+                    document.getElementById(`${tabId}-panel`).classList.add('active');
+                });
+            });
+
+            // Sidebar navigation
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const tabId = item.dataset.tab;
+                    
+                    if (tabId) {
+                        // Update active nav item
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        item.classList.add('active');
+                        
+                        // Show corresponding panel
+                        tabBtns.forEach(b => b.classList.remove('active'));
+                        document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+                        
+                        panels.forEach(panel => panel.classList.remove('active'));
+                        document.getElementById(`${tabId}-panel`).classList.add('active');
+                    }
+                });
+            });
+
+            // Save button
+            saveBtn.addEventListener('click', () => {
+                const note = notes.find(n => n.id === currentNoteId);
+                if (note) {
+                    note.title = noteTitle.value;
+                    note.content = noteEditor.value;
+                    note.date = new Date().toISOString().split('T')[0];
+                    
+                    // Show save confirmation
+                    saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved';
+                    saveBtn.style.backgroundColor = 'var(--accent-green)';
+                    saveBtn.style.color = 'var(--bg-primary)';
+                    
+                    setTimeout(() => {
+                        saveBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+                        saveBtn.style.backgroundColor = '';
+                        saveBtn.style.color = '';
+                    }, 2000);
+                    
+                    renderNotesList();
+                    renderPreview();
+                }
+            });
+
+            // New note button
+            newNoteBtn.addEventListener('click', () => {
+                const newNote = {
+                    id: notes.length + 1,
+                    title: "Untitled Note",
+                    date: new Date().toISOString().split('T')[0],
+                    content: "# New Note\n\nStart typing here...",
+                    tags: ["new"]
+                };
+                
+                notes.unshift(newNote);
+                currentNoteId = newNote.id;
+                renderNotesList();
+                loadNote(currentNoteId);
+            });
+
+            // Live preview update
+            noteEditor.addEventListener('input', renderPreview);
+            noteTitle.addEventListener('input', () => {
+                previewTitle.textContent = noteTitle.value;
+            });
+
+            // Graph controls
+            document.getElementById('zoom-in').addEventListener('click', () => {
+                alert('Zoom in functionality would be implemented with a graph library like Cytoscape or D3.js');
+            });
+
+            document.getElementById('zoom-out').addEventListener('click', () => {
+                alert('Zoom out functionality would be implemented with a graph library');
+            });
+
+            document.getElementById('center-graph').addEventListener('click', () => {
+                alert('Center graph functionality would be implemented');
+            });
+
+            document.getElementById('graph-layout').addEventListener('click', () => {
+                alert('Change graph layout functionality would be implemented');
+            });
+        }
+
+        // Render graph visualization
+        function renderGraph() {
+            const canvas = document.getElementById('graph-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas dimensions
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+            
+            // Graph nodes data
+            const nodes = [
+                { id: 1, x: 400, y: 300, radius: 30, label: "Welcome", connections: [2, 3, 4] },
+                { id: 2, x: 200, y: 200, radius: 25, label: "Project", connections: [1, 5] },
+                { id: 3, x: 600, y: 200, radius: 25, label: "Meeting", connections: [1, 6] },
+                { id: 4, x: 300, y: 450, radius: 25, label: "Learning", connections: [1, 5] },
+                { id: 5, x: 200, y: 400, radius: 20, label: "Travel", connections: [2, 4] },
+                { id: 6, x: 650, y: 400, radius: 20, label: "Books", connections: [3] },
+                { id: 7, x: 500, y: 500, radius: 20, label: "Ideas", connections: [2] }
+            ];
+            
+            // Draw graph
+            function drawGraph() {
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw connections
+                nodes.forEach(node => {
+                    node.connections.forEach(connId => {
+                        const targetNode = nodes.find(n => n.id === connId);
+                        if (targetNode) {
+                            drawConnection(node, targetNode);
+                        }
+                    });
+                });
+                
+                // Draw nodes
+                nodes.forEach(node => {
+                    drawNode(node);
+                });
+            }
+            
+            // Draw a node
+            function drawNode(node) {
+                // Node glow effect
+                const gradient = ctx.createRadialGradient(
+                    node.x, node.y, 0,
+                    node.x, node.y, node.radius * 1.5
+                );
+                gradient.addColorStop(0, 'rgba(188, 140, 255, 0.6)');
+                gradient.addColorStop(1, 'rgba(188, 140, 255, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius * 1.5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Node circle
+                ctx.fillStyle = 'var(--accent-purple)';
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Node label
+                ctx.fillStyle = 'var(--text-primary)';
+                ctx.font = '14px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText(node.label, node.x, node.y + 5);
+            }
+            
+            // Draw connection between nodes
+            function drawConnection(source, target) {
+                ctx.strokeStyle = 'var(--graph-link)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(source.x, source.y);
+                ctx.lineTo(target.x, target.y);ssss
+                ctx.stroke();
+            }
+            
+            // Initial draw
+            drawGraph();
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                canvas.width = canvas.parentElement.offsetWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
+                drawGraph();
+            });
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
